@@ -34,7 +34,7 @@ class WorkoutModel(db.Model):
 
     @classmethod
     def find_by_date(cls, date):
-        return cls.query.filter_by(date=date).all()
+        return cls.query.filter_by(workout_date=date).first()
 
     def save_to_db(self):
         db.session.add(self)
