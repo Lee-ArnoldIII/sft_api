@@ -7,9 +7,9 @@ class WorkoutModel(db.Model):
     item = db.Column(db.String(80))
     workout_type = db.Column(db.String(255))
     workout_length = db.Column(db.Integer)
-    workout_date = db.Column(db.DateTime())
+    workout_date = db.Column(db.Text)
     
-    user_id = db.Column(db.String(80), db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     users = db.relationship('UserModel')
 
     def __init__(self, item, workout_type, workout_length, workout_date, user_id):
@@ -21,7 +21,7 @@ class WorkoutModel(db.Model):
     
     def json(self):
         return {'item': self.item, 'workout_type': self.workout_type,
-                'workout_lenght': self.workout_length, 'workout_date': self.workout_date
+                'workout_lenght': self.workout_length, 'workout_date': self.workout_date,
                 'user': self.user_id}
 
     ## TODO: Determine if the json2 function will be need for something important

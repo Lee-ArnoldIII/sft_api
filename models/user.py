@@ -8,7 +8,7 @@ class UserModel(db.Model):
     password = db.Column(db.String(80))
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
-    dob = db.Column(db.DateTime())
+    dob = db.Column(db.Text)
     gender = db.Column(db.String(80))
 
     workouts = db.relationship('WorkoutModel', lazy='dynamic')

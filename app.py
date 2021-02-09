@@ -7,10 +7,12 @@ from db import db
 from security import authenticate, identity
 from resources.user import UserRegister, UserList, User
 from resources.workout import AddWorkout, WorkoutList, Workout
-from resources.meal import AddMeal, MealList, Meal
+# from resources.meal import AddMeal, MealList, Meal
 
+# TODO: Figure out how to set up a postgres server for instead of a sqlite
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = ''
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost:5432/sft_api'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # TODO: Turn this on when connected to FE
@@ -22,7 +24,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #     'SECRET_KEY': '...'
 # }
 
-app.secret_key = ''
+app.secret_key = 'lee'
 api = Api(app)
 
 @app.before_first_request
@@ -34,14 +36,15 @@ jwt = JWT(app, authenticate, identity)
 # TODO: create all the routes below
 api.add_resource(UserRegister, '/register')
 api.add_resource(AddWorkout, '/addwrkt')
-api.add_resource(AddMeal, '/addmeal')
+
 
 api.add_resource(UserList, '/users')
 api.add_resource(User, '/user/<string:username>')
 # TODO: Determine if ^ will need to change and in what way if so
 
-api.add_resource(MealList, '/meals')
-api.add_resource(Meal, '/meal/<string:name>')
+# api.add_resource(MealList, '/meals')
+# api.add_resource(AddMeal, '/addmeal')
+# api.add_resource(Meal, '/meal/<string:name>')
 # TODO: Determine if ^ will need to change and in what way if so
 
 api.add_resource(WorkoutList, '/workouts')
