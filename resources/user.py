@@ -4,33 +4,33 @@ from flask_jwt import JWT, jwt_required
 
 class UserRegister(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument('username', 
-            type=str, 
+    parser.add_argument('username',
+            type=str,
             required=True,
             help="This field cannot be blank!"
     )
-    parser.add_argument('password', 
-            type=str, 
+    parser.add_argument('password',
+            type=str,
             required=True,
             help="This field cannot be blank!"
     )
-    parser.add_argument('first_name', 
-            type=str, 
+    parser.add_argument('first_name',
+            type=str,
             required=True,
             help="This field cannot be blank!"
     )
-    parser.add_argument('last_name', 
-            type=str, 
+    parser.add_argument('last_name',
+            type=str,
             required=True,
             help="This field cannot be blank!"
     )
-    parser.add_argument('dob', 
-            type=str, 
+    parser.add_argument('dob',
+            type=str,
             required=True,
             help="This field cannot be blank!"
     )
-    parser.add_argument('gender', 
-            type=str, 
+    parser.add_argument('gender',
+            type=str,
             required=True,
             help="This field cannot be blank!"
     )
@@ -39,44 +39,48 @@ class UserRegister(Resource):
         data = UserRegister.parser.parse_args()
 
         if UserModel.find_by_username(data['username']):
-            return {'message': 'User already exists!'}, 400
+            return {'message': "User already exists!"},400
 
         user = UserModel(**data)
         user.save_to_db()
 
-        return {'message': 'User successfully created!'}, 201
-
+        return {'message': "User created successfully."}, 201
 
 class User(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument('first_name', 
-        type=str, 
-        required=True,
-        help="This field cannot be blank!"
+    parser.add_argument('password',
+            type=str,
+            required=True,
+            help="This field cannot be blank!"
     )
-    parser.add_argument('last_name', 
-        type=str, 
-        required=True,
-        help="This field cannot be blank!"
+    parser.add_argument('first_name',
+            type=str,
+            required=True,
+            help="This field cannot be blank!"
     )
-    parser.add_argument('dob', 
-        type=str, 
-        required=True,
-        help="This field cannot be blank!"
+    parser.add_argument('last_name',
+            type=str,
+            required=True,
+            help="This field cannot be blank!"
     )
-    parser.add_argument('gender', 
-        type=str, 
-        required=True,
-        help="This field cannot be blank!"
+    parser.add_argument('dob',
+            type=str,
+            required=False,
+            help="This field can be blank!"
     )
-        
-    @jwt_required
+    parser.add_argument('gender',
+            type=str,
+            required=True,
+            help="This field cannot be blank!"        
+    )
+
+    @jwt_required()
     def get(self, username):
         user = UserModel.find_by_username(username)
         if user:
             return user.json()
-        return {'message': 'User not found!'}, 404
-    
+        return {'message': "User not found!"}, 404
+
     def put(self, username):
         data = User.parser.parse_args()
 
@@ -85,7 +89,7 @@ class User(Resource):
         if user is None:
             user = UserModel(username, **data)
         else:
-            user.username = username
+            user.password = data['password']
             user.first_name = data['first_name']
             user.last_name = data['last_name']
             user.dob = data['dob']

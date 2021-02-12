@@ -40,6 +40,7 @@ api.add_resource(AddWorkout, '/addwrkt')
 
 api.add_resource(UserList, '/users')
 api.add_resource(User, '/user/<string:username>')
+
 # TODO: Determine if ^ will need to change and in what way if so
 
 # api.add_resource(MealList, '/meals')
@@ -48,7 +49,7 @@ api.add_resource(User, '/user/<string:username>')
 # TODO: Determine if ^ will need to change and in what way if so
 
 api.add_resource(WorkoutList, '/workouts')
-api.add_resource(Workout, '/workout/<string:date>')
+api.add_resource(Workout, '/workout/<string:item>')
 # TODO: Determine if ^ will need to change and in what way if so
 
 

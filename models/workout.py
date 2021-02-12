@@ -5,23 +5,23 @@ class WorkoutModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     item = db.Column(db.String(80))
-    workout_type = db.Column(db.String(255))
-    workout_length = db.Column(db.Integer)
-    workout_date = db.Column(db.Text)
+    wkt_type = db.Column(db.String(255))
+    duration = db.Column(db.Integer)
+    date = db.Column(db.Text)
     
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     users = db.relationship('UserModel')
 
-    def __init__(self, item, workout_type, workout_length, workout_date, user_id):
+    def __init__(self, item, wkt_type, duration, date, user_id):
         self.item = item
-        self.workout_type = workout_type
-        self.workout_length = workout_length
-        self.workout_date = workout_date
+        self.wkt_type = wkt_type
+        self.duration = duration
+        self.date = date
         self.user_id = user_id
     
     def json(self):
-        return {'item': self.item, 'workout_type': self.workout_type,
-                'workout_lenght': self.workout_length, 'workout_date': self.workout_date,
+        return {'item': self.item, 'wkt_type': self.wkt_type,
+                'duration': self.duration, 'date': self.date,
                 'user': self.user_id}
 
     ## TODO: Determine if the json2 function will be need for something important
@@ -30,7 +30,7 @@ class WorkoutModel(db.Model):
 
     @classmethod
     def find_by_item(cls, item):
-        return cls.query.filter_by(item=item).all()
+        return cls.query.filter_by(item=item).first()
 
     @classmethod
     def find_by_date(cls, date):
