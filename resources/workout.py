@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 from models.workout import WorkoutModel
-from flask_jwt import JWT, jwt_required
+from flask_jwt_extended import jwt_required
 
 class AddWorkout(Resource):
     parser = reqparse.RequestParser()
@@ -36,7 +36,7 @@ class AddWorkout(Resource):
         workout = WorkoutModel(**data)
         workout.save_to_db()
 
-        return {'message': "Workout created succefully."}, 201
+        return {'message': "Workout created successfully."}, 201
 
 
 class Workout(Resource):

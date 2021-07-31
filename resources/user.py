@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse
 from models.user import UserModel
-from flask_jwt import JWT, jwt_required
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt
+from werkzeug.security import safe_str_cmp
 
 class UserRegister(Resource):
     parser = reqparse.RequestParser()
@@ -99,7 +100,12 @@ class User(Resource):
 
         return user.json()
 
+    @jwt_required()
     def delete(self, username):
+        claims = get_jwt()
+        if not claims['is_admin']:
+            return {'message': 'Admin privileges required.'}, 401
+        
         user = UserModel.find_by_username(username)
         if user is None:
             return {'message': 'User not found!'}, 404
@@ -107,7 +113,35 @@ class User(Resource):
             user.delete_from_db()
             return {'message': 'User deleted!'}
 
-
 class UserList(Resource):
     def get(self):
-        return {'user': [user.json() for user in UserModel.query.all()]}
+        return {'user': [user.json() for user in UserModel.find_all()]}
+
+
+class UserLogin(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('username', 
+                        type=str,
+                        required=True,
+                        help="This field cannot be blank."
+                        )
+    parser.add_argument('password',
+                        type=str,
+                        required=True,
+                        help="This field cannot be blank."
+                        )
+
+    @classmethod
+    def post(cls):
+        data = cls.parser.parse_args()
+
+        user = UserModel.find_by_username(data['username'])
+
+        if user and safe_str_cmp(user.password, data['password']):
+            access_token = create_access_token(identity=user.id, fresh=True)
+            refresh_token = create_refresh_token(user.id)
+            return {
+                'access_token': access_token,
+                'refresh_token': refresh_token
+            }, 200
+
