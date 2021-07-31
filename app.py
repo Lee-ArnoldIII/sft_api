@@ -1,19 +1,19 @@
 from flask import Flask
 from flask_restful import Api
-from flask_jwt import JWT
+from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from db import db
 
-from security import authenticate, identity
-from resources.user import UserRegister, UserList, User
+from resources.user import UserRegister, UserList, User, UserLogin
 from resources.workout import AddWorkout, WorkoutList, Workout
 # from resources.meal import AddMeal, MealList, Meal
 
 # TODO: Figure out how to set up a postgres server for instead of a sqlite
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost:5432/sft_api'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost:5432/sft_api'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['PROPAGATE_EXCEPTIONS'] = True
 
 # TODO: Turn this on when connected to FE
 # config = {
@@ -31,7 +31,13 @@ api = Api(app)
 def create_tables():
     db.create_all()
 
-jwt = JWT(app, authenticate, identity)
+jwt = JWTManager(app)
+
+@jwt.additional_claims_loader
+def add_claims_to_jwt(identity):
+    if identity == 1:
+        return {'is_admin': True}
+    return {'is_admin': False}
 
 # TODO: create all the routes below
 api.add_resource(UserRegister, '/register')
@@ -40,6 +46,7 @@ api.add_resource(AddWorkout, '/addwrkt')
 
 api.add_resource(UserList, '/users')
 api.add_resource(User, '/user/<string:username>')
+api.add_resource(UserLogin, '/login')
 
 # TODO: Determine if ^ will need to change and in what way if so
 
